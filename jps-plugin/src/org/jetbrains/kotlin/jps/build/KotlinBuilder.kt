@@ -427,7 +427,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
                     val kotlinBuildTargets = context.kotlinBuildTargets
                     for (target in targets) {
-                        dataManager.getKotlinCache(kotlinBuildTargets[target]!!).clean()
+                        dataManager.getKotlinCache(kotlinBuildTargets[target])?.clean()
                         hasKotlin.clean(target)
                         rebuildAfterCacheVersionChanged[target] = true
                     }
@@ -441,7 +441,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
                     val kotlinBuildTargets = context.kotlinBuildTargets
                     for (target in context.allTargets()) {
-                        dataManager.getKotlinCache(kotlinBuildTargets[target]!!).clean()
+                        dataManager.getKotlinCache(kotlinBuildTargets[target])?.clean()
                     }
                 }
                 CacheVersion.Action.CLEAN_DATA_CONTAINER -> {
@@ -473,7 +473,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
         val kotlinBuildTargets = context.kotlinBuildTargets
         for (target in context.allTargets()) {
-            dataManager.getKotlinCache(kotlinBuildTargets[target]!!).clean()
+            dataManager.getKotlinCache(kotlinBuildTargets[target])?.clean()
             rebuildAfterCacheVersionChanged[target] = true
         }
 
@@ -709,17 +709,11 @@ private fun getIncrementalCaches(
     val kotlinBuildTargets = context.kotlinBuildTargets
 
     val chunkCaches = chunk.targets.keysToMapExceptNulls {
-        val kotlinModuleBuilderTarget = kotlinBuildTargets[it]
-        if (kotlinModuleBuilderTarget !is KotlinCommonModuleBuildTarget) {
-            dataManager.getKotlinCache(kotlinBuildTargets[it]!!)
-        } else null
+        dataManager.getKotlinCache(kotlinBuildTargets[it])
     }
 
     val dependentCaches = dependentTargets.mapNotNull {
-        val kotlinModuleBuilderTarget = kotlinBuildTargets[it]
-        if (kotlinModuleBuilderTarget !is KotlinCommonModuleBuildTarget) {
-            dataManager.getKotlinCache(kotlinModuleBuilderTarget!!)
-        } else null
+        dataManager.getKotlinCache(kotlinBuildTargets[it])
     }
 
     for (chunkCache in chunkCaches.values) {
